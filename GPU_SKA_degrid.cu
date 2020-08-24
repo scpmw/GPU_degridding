@@ -156,9 +156,11 @@ __global__ void GPU_SKA_degrid_kernel_mk1(
 	for (int z = 0; z < w_kernel_size; z++) {
 		double2 grid_value = d_subgrid[blockIdx.y*grid_z*grid_y*grid_x + z*grid_x*grid_y + grid_offset + local_y*grid_y + local_x];
 		
-		vis.x += d_gcf_w_kernel[sub_offset_z + z]*d_gcf_uv_kernel[sub_offset_y + local_y]*d_gcf_uv_kernel[sub_offset_x + local_x]*grid_value.x;
-		vis.y += d_gcf_w_kernel[sub_offset_z + z]*d_gcf_uv_kernel[sub_offset_y + local_y]*d_gcf_uv_kernel[sub_offset_x + local_x]*grid_value.y;
+		vis.x += d_gcf_w_kernel[sub_offset_z + z]*grid_value.x;
+		vis.y += d_gcf_w_kernel[sub_offset_z + z]*grid_value.y;
 	}
+	vis.x *= d_gcf_uv_kernel[sub_offset_y + local_y]*d_gcf_uv_kernel[sub_offset_x + local_x];
+	vis.y *= d_gcf_uv_kernel[sub_offset_y + local_y]*d_gcf_uv_kernel[sub_offset_x + local_x];
 	
 	// NOTE: Reduction checked
 	s_local[threadIdx.x] = vis;
